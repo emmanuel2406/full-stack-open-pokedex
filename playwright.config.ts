@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: './test/e2e-tests',
   testMatch: '**/*.spec.{js,jsx,ts,tsx}',
   webServer: {
-    command: 'pnpm start',
+    command: 'npm run start',
     url: 'http://localhost:3000',
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
