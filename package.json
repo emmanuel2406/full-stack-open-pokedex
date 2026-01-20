@@ -20,7 +20,6 @@
   ],
   "author": "Smartly.io",
   "license": "ISC",
-  "type": "module",
   "bugs": {
     "url": "https://github.com/smartlyio/fullstackopen-cicd/issues"
   },
