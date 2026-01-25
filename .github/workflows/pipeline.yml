@@ -29,6 +29,8 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run E2E Tests
         run: npm run test:e2e
+      - name: Skip condition output
+        run: echo "SKIP_CONDITION: ${{ env.SKIP_CONDITION }}"
       - name: Deploy to Render
         uses: JorgeLNJunior/render-deploy@v1.4.7
         if: ${{ github.event_name == 'push' && !env.SKIP_CONDITION }}
@@ -37,20 +39,21 @@ jobs:
           api_key: ${{ secrets.RENDER_API_KEY }}
           wait_deploy: true
       - name: Test Success
-        uses: rjstone/discord-webhook-notify@v2
+        uses: sarisia/actions-status-discord@v1
+
         if: success()
         with:
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+            webhook: ${{ secrets.DISCORD_WEBHOOK }}
             severity: info
-            title: A new version of Pokedex deployed
+            title: A new version of `Pokedex` has been deployed
             description: to https://pokedex-vihq.onrender.com by ${{ github.event.head_commit.author.username }}
       - name: Test Failure
-        uses: rjstone/discord-webhook-notify@v2
+        uses: sarisia/actions-status-discord@v1
         if: failure()
         with:
-            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+            webhook: ${{ secrets.DISCORD_WEBHOOK }}
             severity: error
-            title: Pokedex deployment failed
+            title: The `Pokedex` deployment failed
             description: commit ${{ github.event.head_commit.id }} by ${{ github.event.head_commit.author.username }} broke the build :(
   tag_release:
     needs: [simple_deployment_pipeline]
