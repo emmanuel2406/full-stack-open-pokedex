@@ -36,6 +36,22 @@ jobs:
           service_id: ${{ secrets.RENDER_SERVICE_ID }}
           api_key: ${{ secrets.RENDER_API_KEY }}
           wait_deploy: true
+      - name: Test Success
+        uses: rjstone/discord-webhook-notify@v2
+        if: success()
+        with:
+            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+            severity: info
+            title: A new version of Pokedex deployed
+            description: to https://pokedex-vihq.onrender.com by ${{ github.event.head_commit.author.name }}
+      - name: Test Failure
+        uses: rjstone/discord-webhook-notify@v2
+        if: failure()
+        with:
+            webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+            severity: error
+            title: Pokedex deployment failed
+            description: commit ${{ github.event.head_commit.id }} by ${{ github.event.head_commit.author.name }} broke the build :(
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
@@ -47,4 +63,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+
 
