@@ -29,12 +29,9 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run E2E Tests
         run: npm run test:e2e
-      - name: Skip condition output
-        if: ${{ !env.SKIP_CONDITION }}
-        run: echo "SKIP_CONDITION = ${{ env.SKIP_CONDITION }}"
       - name: Deploy to Render
         uses: JorgeLNJunior/render-deploy@v1.4.7
-        if: ${{ github.event_name == 'push' && !env.SKIP_CONDITION }}
+        if: ${{ github.event_name == 'push' && env.SKIP_CONDITION == 'false' }}
         with:
           service_id: ${{ secrets.RENDER_SERVICE_ID }}
           api_key: ${{ secrets.RENDER_API_KEY }}
@@ -44,7 +41,7 @@ jobs:
         if: success()
         with:
             webhook: ${{ secrets.DISCORD_WEBHOOK }}
-            severity: info
+            status: Success
             title: A new version of `Pokedex` has been deployed
             description: to https://pokedex-vihq.onrender.com by ${{ github.event.head_commit.author.username }}
       - name: Test Failure
@@ -52,7 +49,7 @@ jobs:
         if: failure()
         with:
             webhook: ${{ secrets.DISCORD_WEBHOOK }}
-            severity: error
+            status: Failure
             title: The `Pokedex` deployment failed
             description: commit ${{ github.event.head_commit.id }} by ${{ github.event.head_commit.author.username }} broke the build :(
   tag_release:
@@ -61,7 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' && !env.SKIP_CONDITION }}
+        if: ${{ github.event_name == 'push' && env.SKIP_CONDITION == 'false' }}
         uses: anothrNick/github-tag-action@1.75.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
