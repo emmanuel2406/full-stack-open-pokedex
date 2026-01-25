@@ -30,6 +30,7 @@ jobs:
       - name: Run E2E Tests
         run: npm run test:e2e
       - name: Skip condition output
+        if: ${{ !env.SKIP_CONDITION }}
         run: echo "SKIP_CONDITION = ${{ env.SKIP_CONDITION }}"
       - name: Deploy to Render
         uses: JorgeLNJunior/render-deploy@v1.4.7
